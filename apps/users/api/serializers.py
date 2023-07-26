@@ -7,7 +7,7 @@ class UserSerializer(serializers.Serializer):
     nombre = serializers.CharField(max_length=100)
     email = serializers.CharField()
 
-    def validate(self, attrs):
+    def validate(self, attrs): #1 ciclo de vida
         nombre = attrs.get("nombre")
         email = attrs.get("email")
         if not "@" in email:
@@ -18,18 +18,52 @@ class UserSerializer(serializers.Serializer):
 
         return super().validate(attrs)
     
-    def to_representation(self, instance):
+    def create(self, validated_data): #2 ciclo de vida
+        return super().create(validated_data)
+    
+    def to_representation(self, instance): #3 ciclo de vida
         represetation =  super().to_representation(instance) # esto retorna un dict
         return represetation
 
 
 class HouseSerializer(serializers.ModelSerializer):
+    # serializador auxiliar
+    user = UserSerializer()
     class Meta:
         model = House
-        fields = ["name"]
+        fields = ["id","name"]
 
-    def create(self, validated_data):
-        return super().create(validated_data)
+    def create(self, validated_data): # post
+        # name = validated_data["name"]
+        # name_body = validated_data.get("name")
+        new_house = House.objects.create(**validated_data)
+        return new_house
+
+    def update(self, instance, validated_data): # put
+        instance.name = validated_data.get("name")
+        instance.save()
+        return instance
     
-    def update(self, instance, validated_data):
-        return super().update(instance, validated_data)
+    def to_representation(self, instance): # como se represta
+        return super().to_representation(instance)
+
+
+class HouseSerializer2(serializers.ModelSerializer):
+    class Meta:
+        model = House
+        fields = ["id"]
+
+
+
+class Serializer(serializers.Serializer):
+    # campo 1
+    # campo 2
+    # etc
+    # ...
+    pass
+
+
+class ModelSerializer(serializers.ModelSerializer):
+    # tener class Meta
+    pass
+
