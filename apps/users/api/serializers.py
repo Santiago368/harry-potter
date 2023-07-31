@@ -27,8 +27,6 @@ class UserSerializer(serializers.Serializer):
 
 
 class HouseSerializer(serializers.ModelSerializer):
-    # serializador auxiliar
-    user = UserSerializer()
     class Meta:
         model = House
         fields = ["id","name"]
